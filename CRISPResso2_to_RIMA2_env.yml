@@ -1,0 +1,9 @@
+name: atg_crispresso2_to_rima2
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - crispresso2=2.2.14
+  - fastx_toolkit=0.0.14
+  - flash=1.2.11

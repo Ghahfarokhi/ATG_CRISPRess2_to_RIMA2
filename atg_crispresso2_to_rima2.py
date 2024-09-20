@@ -35,6 +35,7 @@ def collect_crispreeso_running_info(crispresso_folder):
     
     df['site_name'] = ''
     df['info_json_files'] = ''
+    df['running_log_files'] = ''
     df['amplicon_seq'] = ''
     df['guide_seq'] = ''
     df['cut_pos'] = ''
@@ -42,23 +43,39 @@ def collect_crispreeso_running_info(crispresso_folder):
     df['offset'] = ''
 
     df['info_json_files'] = df['alleles_frequency_files'].str.replace('Alleles_frequency_table.zip','CRISPResso2_info.json')
-
-    amplicon_pattern = r'"amplicon_seq": "([^"]+)"'
-    guide_pattern = r'"guide_seq": "([^"]+)"'
+    df['running_log_files'] = df['alleles_frequency_files'].str.replace('Alleles_frequency_table.zip','CRISPResso_RUNNING_LOG.txt')
 
     for index, row in df.iterrows():
 
         json_file = row['info_json_files']
+        running_log_file = row['running_log_files']
 
-        with open(json_file, 'r') as file:
-            data = file.read()
+        if os.path.exists(json_file):
 
-        amplicon = re.findall(amplicon_pattern, data)
-        guide = re.findall(guide_pattern, data)
+            amplicon_pattern = r'"amplicon_seq": "([^"]+)"'
+            guide_pattern = r'"guide_seq": "([^"]+)"'
 
-        df.loc[index, 'amplicon_seq'] = amplicon[0]
-        df.loc[index, 'guide_seq'] = guide[0]
-    
+            with open(json_file, 'r') as file:
+                data = file.read()
+
+            amplicon = re.findall(amplicon_pattern, data)
+            guide = re.findall(guide_pattern, data)
+            df.loc[index, 'amplicon_seq'] = amplicon[0]
+            df.loc[index, 'guide_seq'] = guide[0]
+
+        elif os.path.exists(running_log_file):
+
+            with open(running_log_file, 'r') as file:
+                data = file.read()
+            
+            amplicon = re.search(r'--amplicon_seq (\S+)', data)
+            guide = re.search(r'--guide_seq (\S+)', data)
+            df.loc[index, 'amplicon_seq'] = amplicon.group(1)
+            df.loc[index, 'guide_seq'] = guide.group(1)
+
+        else:
+            print(f"ERROR: Could't find either of CRISPResso2_info.json or CRISPResso_RUNNING_LOG.txt files for sample: {row['site_name']}")
+            sys.exit(0)
     
     unmatch = []
     for index, row in df.iterrows():
@@ -255,7 +272,7 @@ def process_site(df, site, options):
     tsv_file_name = f"RIMA_{site['name']}-variants.tsv"
     tsv_file_path = f"{options['out']}/{tsv_file_name}"
     
-    RIMA_variants_df.to_csv(tsv_file_path, sep="\t")
+    RIMA_variants_df.to_csv(tsv_file_path, sep="\t", index=False)
 
     row_index = df.index[df['site_name'] == site_name].tolist()[0]
 
@@ -270,8 +287,8 @@ def process_site(df, site, options):
 
 def print_help():
     description = """
-    This script recursively collects all CRISPRess's "Alleles_frequence_table.zip" files in path 
-    and converts into variant tables that can be analysed using RIMA.
+    This script recursively collects all CRISPResso's "Alleles_frequence_table.zip" files in path 
+    and converts them into variant tables that can be analysed using RIMA.
     """
     usage = """\nUsage:\n
     For printing the help:\n
@@ -357,7 +374,7 @@ def main():
         
     experiment_sheet_df = df[['file_address', 'file_name', 'amplicon_seq', 'guide_seq', 'mapped_reads', 'wt_count', 'total_variants', 'cut_pos']]
     experiment_sheet_tsv_file = f"{options['out']}/experiment_sheet.tsv"
-    experiment_sheet_df.to_csv(experiment_sheet_tsv_file, sep="\t")
+    experiment_sheet_df.to_csv(experiment_sheet_tsv_file, sep="\t", index=False)
     print(f"\nTab-delimited experiment_sheet file saved as {experiment_sheet_tsv_file}\nDone!\n")
 
 if __name__ == '__main__':

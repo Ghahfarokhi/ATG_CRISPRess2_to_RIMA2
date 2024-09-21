@@ -1,7 +1,23 @@
 # ATG_CRISPResso2_To_RIMA2
 
 ## Background
-Non-Homologous End Joining (NHEJ) and Micohomology Mediated End Joining (MMEJ) are two highly conserved DNA rapir pathways in eukaryotic cells. 
+Non-Homologous End Joining (NHEJ) and Microhomology-Mediated End Joining (MMEJ) are two highly conserved DNA repair pathways in eukaryotic cells. The NHEJ repair pathway is error-prone; it can repair DNA double-strand breaks (DSBs) either precisely or by introducing small insertions or deletions (indels). The MMEJ repair pathway, however, typically repairs DSBs by introducing deletions. Notably, a variation of MMEJ is thought to introduce de novo insertions. Classical MMEJ (c-MMEJ) repair events refer to deletions associated with microhomologies.
+
+Studying repair events at Cas9 target sites in human cells provides insights into the cell's DNA repair capacity and can be used as an assay to screen compounds that alter DNA repair pathways. One method of studying repair events at Cas9 cleavage sites is through amplicon sequencing and bioinformatics analysis. Several data analysis packages are available for such studies, with CRISPResso being the most widely used software. CRISPResso can delineate modified reads into Homology-Directed Repair (HDR) and non-HDR events. However, it does not distinguish between NHEJ and MMEJ events, and all erroneous repairs are collectively categorized as NHEJ (non-HDR).
+
+RIMA (Rational Indel Analysis Software), an Excel-based tool, was developed to specifically identify c-MMEJ deletions.
+
+This repository contains:
+
+ - A Python script ATG_CRISPResso2_to_RIMA2.py, which reads CRISPResso output (specifically the Allele_Frequency_Table.zip file) and generates variant tables that can be used as RIMA input.
+ - The RIMA Excel workbook, which analyzes variant tables, produces statistics on repair events, and provides an informative graphical representation of the alleles.
+
+## RIMA use cases
+ - **Restrictly** where the a wild-type Cas9 (or its variations like PEn) is used (especifically, SpyCas9 or Type-IIB Cas9s). 
+ - HDR templates can be used only if the HDR repair outcome is insertion of 3 nucleotides or more.
+ - Up to 12 different repair template can be used, only if the repair outcome is the insrtion of 3 nucleotides or more.
+ - Except extended insertions, other repair events are classified into *c-MMEJ* and *Other-EJ*.
+ - Single nucleotide variations are considered sequencing errors and are eliminated from the analysis. Therefore, HDR experiments that exchange bases must not be analyses using RIMA.
 
 ## Requirements
 
@@ -112,7 +128,7 @@ file_address  file_name                                    amplicon_seq         
 
 ```
 
-### Transfer RIMA files to a Windows computer
+### Transfer RIMA files to a Win or Mac computer
 * Copy and paste `experiment_sheet.tsv` table to `Experiment` worksheet in **RIMA2_v20240420.xlsm** file.
 * Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder or adjust the file addresses accordign to your local disk address. *IMPORTANT NOTE*: file addresses should be alphanumerical without spaces.
 

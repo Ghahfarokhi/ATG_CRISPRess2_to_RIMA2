@@ -135,6 +135,55 @@ def collect_crispreeso_running_info(crispresso_folder):
     
     return df
 
+def determine_MMEJ_deletion(ref, aligned, Read_Status, n_deleted, n_inserted, n_mutated, nreads, pc, guide):
+    
+    # This function determines if a deletion is MMEJ associated
+    dashes = "-" * n_deleted
+
+    # Find all locations on the aligned sequence that start with dashes
+    positions = []
+    index = aligned.find(dashes)
+    
+    while index != -1:
+        positions.append(index)
+        # Find the next occurrence of dashes, starting after the current one
+        index = aligned.find(dashes, index + 1)
+    # print("Positions: ", positions)
+    
+    # Choose dashes closest to the sgRNA
+    # Determine if guide is on Fwd or Rev
+    if ref.find(guide) == -1:
+        sgRNA_position = ref.find(revcomp(guide))
+    else:
+        sgRNA_position = ref.find(guide)
+
+    if sgRNA_position == -1 or len(positions) == 0:
+        return 0
+
+    # print("sgRNA pos: ", sgRNA_position)
+    if len(positions) == 1:
+        selected_dashes_position = positions[0]
+    else:
+        selected_dashes_position = min(positions, key=lambda x: abs(x - sgRNA_position))
+
+    # Left-align the deletions
+    for i in range(n_deleted):
+        location = aligned.find(dashes, selected_dashes_position)
+        if location - 1 > 0 and  location + n_deleted - 1 < len(ref):
+            if aligned[ location - 1 ] == ref[ location + n_deleted - 1 ]:
+                aligned = aligned[ :location - 1 ] + "-" + aligned[ location: ]
+                aligned = aligned[ :location + n_deleted -1 ] + ref[ location + n_deleted - 1 ] + aligned[ location + n_deleted :]
+                selected_dashes_position -= 1
+    
+    MMEJ_len = 0
+    for i in range(n_deleted):
+        location = aligned.find(dashes, selected_dashes_position)
+        if location + i > 0 and location + n_deleted + i < len(ref):
+            if ref[ location + i ] == aligned[ location + n_deleted + i]:
+                MMEJ_len += 1
+
+    return MMEJ_len
+
 def process_alignment(site, options, ref, aligned, nreads, pc, combo):
     """ process one line of CRISPResso alignment into insertions, deletions and SNPs """
 
@@ -214,7 +263,7 @@ def process_alignment(site, options, ref, aligned, nreads, pc, combo):
 def process_site(df, site, options):
     site_name = site['name']
     alleles_frequency_file = site['alleles_frequency_file']
-
+    guide = site['guide']
     print(f"\tProcessing allele frequency table: {alleles_frequency_file}")
 
     zip = zipfile.ZipFile(alleles_frequency_file)
@@ -228,27 +277,81 @@ def process_site(df, site, options):
         # Loop through the rows in the Allele_frequecies table
         line_no = 0
         total_reads = 0
+        MMEJ_reads = 0
+        del_01_bp = 0
+        del_02_05_bp = 0
+        del_06_10_bp = 0
+        del_above_10_bp = 0
+        ins_01_bp = 0
+        ins_02_05_bp = 0
+        ins_06_10_bp = 0
+        ins_above_10_bp = 0
+        indel_combos = 0
         header = None
         combo = {}
-        for line in opened_alleles_frequency_file:
-            line = line.decode().rstrip("\n")
-            line_no += 1
-            a = line.split("\t")
-            if line_no == 1:
-                header = a
-            else:
-                row = {}
-                for i in range(len(header)):
-                    row[ header[i] ] = a[i]
-                ref_name = row.get("Reference_Name", "Reference")
-                if ref_name != "Reference": continue
-                ref = row["Reference_Sequence"]
-                aligned = row["Aligned_Sequence"]
-                nreads = int(row["#Reads"])
-                pc = float(row["%Reads"])
-                process_alignment(site, options, ref, aligned, nreads, pc, combo)
-                total_reads += nreads
+        alleles_frequency_file_with_MMEJ_annotaion_file = alleles_frequency_file.replace(".zip", "_MMEJ_annotated.txt")
         
+        if os.path.exists(alleles_frequency_file_with_MMEJ_annotaion_file):
+            os.remove(alleles_frequency_file_with_MMEJ_annotaion_file)
+
+        with open(alleles_frequency_file_with_MMEJ_annotaion_file, "a") as MMEJ_file:
+
+            for line in opened_alleles_frequency_file:
+                line = line.decode().rstrip("\n")
+                line_no += 1
+                a = line.split("\t")
+                if line_no == 1:
+                    header = a
+                    MMEJ_file.write("\t".join(header) + "\tMMEJ" + "\n")
+                else:
+                    row = {}
+                    for i in range(len(header)):
+                        row[ header[i] ] = a[i]
+                    ref_name = row.get("Reference_Name", "Reference")
+                    ref = row["Reference_Sequence"]
+                    aligned = row["Aligned_Sequence"]
+                    Read_Status = row["Read_Status"]
+                    n_deleted = int(row["n_deleted"])
+                    n_inserted = int(row["n_inserted"])
+                    n_mutated = int(row["n_mutated"])
+                    nreads = int(row["#Reads"])
+                    pc = float(row["%Reads"])
+                    row["MMEJ_deletion"] = 0
+                    
+                    if n_inserted == 0:
+                        if n_deleted == 1:
+                            del_01_bp += nreads
+                        elif n_deleted < 6:
+                            del_02_05_bp += nreads
+                        elif n_deleted < 11:
+                            del_06_10_bp += nreads
+                        elif n_deleted > 10:
+                            del_above_10_bp += nreads
+                    elif n_deleted == 0: 
+                        if n_inserted == 1:
+                            ins_01_bp += nreads
+                        elif n_inserted < 6:
+                            ins_02_05_bp += nreads
+                        elif n_inserted < 11:
+                            ins_06_10_bp += nreads
+                        elif n_inserted > 10:
+                            ins_above_10_bp += nreads
+                    elif n_deleted > 0 and n_inserted > 0: 
+                        indel_combos += nreads
+
+                    if n_deleted >= 2 :
+                        row["MMEJ_deletion"] = determine_MMEJ_deletion (ref, aligned, Read_Status, n_deleted, n_inserted, n_mutated, nreads, pc, guide)
+                    
+                    if row["MMEJ_deletion"] >= 2:
+                        MMEJ_reads += nreads
+
+                    MMEJ_file.write("\t".join(map(str, list(row.values()))) + "\n")
+
+                    if ref_name != "Reference": continue
+                    process_alignment(site, options, ref, aligned, nreads, pc, combo)
+
+                    total_reads += nreads
+            
         RIMA_variants_df = pd.DataFrame(columns=['VariantNo','Position','Type','Length','Ref','Alt','Count'])
         total_variant_rows = 0
         mod_no = 0
@@ -277,6 +380,18 @@ def process_site(df, site, options):
     row_index = df.index[df['site_name'] == site_name].tolist()[0]
 
     df.loc[row_index, 'mapped_reads'] = total_reads
+    df.loc[row_index, 'mmej_reads'] = MMEJ_reads
+
+    df.loc[row_index, 'del_01_bp'] = del_01_bp
+    df.loc[row_index, 'del_02_05_bp'] = del_02_05_bp
+    df.loc[row_index, 'del_06_10_bp'] = del_06_10_bp
+    df.loc[row_index, 'del_above_10_bp'] = del_above_10_bp
+    df.loc[row_index, 'ins_01_bp'] = ins_01_bp
+    df.loc[row_index, 'ins_02_05_bp'] = ins_02_05_bp
+    df.loc[row_index, 'ins_06_10_bp'] = ins_06_10_bp
+    df.loc[row_index, 'ins_above_10_bp'] = ins_above_10_bp
+    df.loc[row_index, 'indel_combos'] = indel_combos
+
     df.loc[row_index, 'total_variants'] = total_variant_rows
     df.loc[row_index, 'wt_count'] = combo["WT"]["nreads"] if "WT" in combo else 0
     df.loc[row_index, 'file_name'] = tsv_file_name
@@ -372,7 +487,25 @@ def main():
         print(site['name'])
         df = process_site(df, site, options)
         
-    experiment_sheet_df = df[['file_address', 'file_name', 'amplicon_seq', 'guide_seq', 'mapped_reads', 'wt_count', 'total_variants', 'cut_pos']]
+    experiment_sheet_df = df[[  'file_address', 
+                                'file_name', 
+                                'amplicon_seq', 
+                                'guide_seq', 
+                                'mapped_reads', 
+                                'wt_count', 
+                                'total_variants', 
+                                'cut_pos', 
+                                'mmej_reads',
+                                'del_01_bp',
+                                'del_02_05_bp',
+                                'del_06_10_bp',
+                                'del_above_10_bp',
+                                'ins_01_bp',
+                                'ins_02_05_bp',
+                                'ins_06_10_bp',
+                                'ins_above_10_bp',
+                                'indel_combos'  ]]
+    
     experiment_sheet_tsv_file = f"{options['out']}/experiment_sheet.tsv"
     experiment_sheet_df.to_csv(experiment_sheet_tsv_file, sep="\t", index=False)
     print(f"\nTab-delimited experiment_sheet file saved as {experiment_sheet_tsv_file}\nDone!\n")

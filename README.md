@@ -98,11 +98,15 @@ VariantNo  Position  Type  Length     Ref  Alt           Count
 
 Output:
 ```
+file_address  file_name                                    amplicon_seq                     guide_seq                                                                                                                                                                                                   mapped_reads          wt_count  total_variants  cut_pos
 0             C:\RIMA\Raw\RIMA_example_DMSO-variants.tsv   RIMA_example_DMSO-variants.tsv   CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180       66              9        56
 1             C:\RIMA\Raw\RIMA_example_NHEJi-variants.tsv  RIMA_example_NHEJi-variants.tsv  CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180       77              6        56
+
 ```
 
 ### Transfer RIMA files to a Windows computer
-* Copy and paste `experiment_sheet.tsv` table to `Experiment` worksheet in **RIMA_template.xlsm** file.
-* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder.
+* Copy and paste `experiment_sheet.tsv` table to `Experiment` worksheet in **RIMA2_v20240420.xlsm** file.
+* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder or adjust the file addresses accordign to your local disk address. *IMPORTANT NOTE*: file addresses should be alphanumerical without spaces.
 
+### RIMA vs CRISPResso
+![Snapshots of RIAM and CRISPResso outputs](./test_data/CRISPResso_vs_RIMA_output.png)

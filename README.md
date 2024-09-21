@@ -35,14 +35,22 @@ Test that the installation of CRISPResso2 and fastx_toolkit has been successful:
 For detailed description of CRISPResso functionalities and alternative ways of installation refer to its official github page: https://github.com/pinellolab/CRISPResso2
 
 ### Run CRISPResso
-Run CRISPResso with a desired set of paramaters (`-a` and `-g` are required parameters for RIMA analysis). For this guideline, the following codes uses the test fastq data that are provided withinn this repository with the following amplicon sequence "CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA" and guide sequence "CTATGAGTACAGGTCATGTA" (also provided in a fasta format in `test_data/01_fastq_examples/reference_and_guide_sequence.fasta`). 
+Run CRISPResso with a desired set of paramaters (`-a` and `-g` are required parameters for RIMA analysis). For this guideline, the following codes uses the test fastq data that are provided withinn this repository with the following amplicon ref and guide sequences:
+
 ```
+cd test_data
+
 CRISPResso -r1 01_fastq_examples/example_DMSO.fastq -a CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA -g CTATGAGTACAGGTCATGTA -o 02_crispresso_examples/
 
 CRISPResso -r1 01_fastq_examples/example_NHEJi.fastq -a CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA -g CTATGAGTACAGGTCATGTA -o 02_crispresso_examples/
+
+cd ..
+
+python ATG_CRISPResso2_to_RIMA2.py  --out ./test_data/04_RIMA/
+
 ```
 
-The test fastq files provided in `test_data/01_fastq_examples/` as example are simulated for two samples transfected with SpyCas9 and a sgRNA, and treated with either DMSO or an NHEJ-inhibitory compound (NHEJi). 
+The test fastq files provided in `test_data/01_fastq_examples/` are simulated for two samples transfected with SpyCas9 and a sgRNA, and treated with either DMSO or an NHEJ-inhibitory compound (NHEJi). 
 
 See CRISPResso output for DMSO and NHEJi samples:
 * [CRISPResso_on_example_DMSO.html](https://ghahfarokhi.github.io/ATG_CRISPResso2_To_RIMA2/test_data/02_crispresso_examples/02_crispresso_examples/CRISPResso_on_example_DMSO.html)
@@ -110,3 +118,13 @@ file_address  file_name                                    amplicon_seq         
 
 ### RIMA vs CRISPResso
 ![Snapshots of RIAM and CRISPResso outputs](./test_data/CRISPResso_vs_RIMA_output.png)
+
+## How to cite RIMA
+**RIMA v1**:
+
+Taheri-Ghahfarokhi A, Taylor BJM, Nitsch R, Lundin A, Cavallo AL, Madeyski-Bengtson K, Karlsson F, Clausen M, Hicks R, Mayr LM, Bohlooly-Y M, Maresca M. Decoding non-random mutational signatures at Cas9 targeted sites. Nucleic Acids Res. 2018 Sep 19;46(16):8417-8434. doi: 10.1093/nar/gky653. [PMID: 30032200](https://pubmed.ncbi.nlm.nih.gov/30032200/); PMCID: PMC6144780.
+
+
+**RIMA v2**:
+
+Wimberger S, Akrap N, Firth M, Brengdahl J, Engberg S, Schwinn MK, Slater MR, Lundin A, Hsieh PP, Li S, Cerboni S, Sumner J, Bestas B, Schiffthaler B, Magnusson B, Di Castro S, Iyer P, Bohlooly-Y M, Machleidt T, Rees S, Engkvist O, Norris T, Cadogan EB, Forment JV, Šviković S, Akcakaya P, Taheri-Ghahfarokhi A, Maresca M. Simultaneous inhibition of DNA-PK and Polϴ improves integration efficiency and precision of genome editing. Nat Commun. 2023 Aug 14;14(1):4761. doi: 10.1038/s41467-023-40344-4. [PMID: 37580318](https://pubmed.ncbi.nlm.nih.gov/37580318/); PMCID: PMC10425386.

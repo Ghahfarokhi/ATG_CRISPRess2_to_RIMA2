@@ -53,8 +53,8 @@ python ATG_CRISPResso2_to_RIMA2.py  --out ./test_data/04_RIMA/
 The test fastq files provided in `test_data/01_fastq_examples/` are simulated for two samples transfected with SpyCas9 and a sgRNA, and treated with either DMSO or an NHEJ-inhibitory compound (NHEJi). 
 
 See CRISPResso output for DMSO and NHEJi samples:
-* [CRISPResso_on_example_DMSO.html](https://ghahfarokhi.github.io/ATG_CRISPResso2_To_RIMA2/test_data/02_crispresso_examples/02_crispresso_examples/CRISPResso_on_example_DMSO.html)
-* [CRISPResso_on_example_NHEJi.html](https://ghahfarokhi.github.io/ATG_CRISPResso2_To_RIMA2/test_data/02_crispresso_examples/02_crispresso_examples/CRISPResso_on_example_NHEJi.html)
+* [CRISPResso_on_example_DMSO.html](./test_data/02_crispresso_examples/CRISPResso_on_example_DMSO.html)
+* [CRISPResso_on_example_NHEJi.html](./test_data/02_crispresso_examples/CRISPResso_on_example_NHEJi.html)
 
 ### Run `ATG_CRISPResso2_to_RIMA2.py` script
 ``` 

@@ -5,5 +5,3 @@ channels:
   - defaults
 dependencies:
   - crispresso2=2.2.14
-  - fastx_toolkit=0.0.14
-  - flash=1.2.11

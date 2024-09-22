@@ -23,8 +23,6 @@ This repository contains:
 
 ```
 crispresso2=2.2.14
-fastx_toolkit=0.0.14
-flash=1.2.11
 ```
 
 ## Step-by-step guideline (Mac and Linux)
@@ -44,13 +42,12 @@ conda env create -f environment.yml
 conda activate atg_crispresso2_to_rima2
 ```
 
-Test that the installation of CRISPResso2 and fastx_toolkit has been successful: 
+Test that the installation of CRISPResso2 has been successful: 
 * `CRISPResso -h` prints the help page for CRISPResso2.
-* `fastx_barcode_splitter.pl -h` prints the help page for fastx_barcode_splitter.
 
 For detailed description of CRISPResso functionalities and alternative ways of installation refer to its official github page: https://github.com/pinellolab/CRISPResso2
 
-### Run CRISPResso
+### Run CRISPResso and `ATG_CRISPResso2_to_RIMA2.py` script
 Run CRISPResso with a desired set of paramaters (`-a` and `-g` are required parameters for RIMA analysis). For this guideline, the following codes uses the test fastq data that are provided withinn this repository with the following amplicon ref and guide sequences:
 
 ```
@@ -72,28 +69,10 @@ See CRISPResso output for DMSO and NHEJi samples:
 * [CRISPResso_on_example_DMSO.html](https://ghahfarokhi.github.io/ATG_CRISPResso2_to_RIMA2/test_data/02_crispresso_examples/CRISPResso_on_example_DMSO.html)
 * [CRISPResso_on_example_NHEJi.html](https://ghahfarokhi.github.io/ATG_CRISPResso2_to_RIMA2/test_data/02_crispresso_examples/CRISPResso_on_example_NHEJi.html)
 
-### Run `ATG_CRISPResso2_to_RIMA2.py` script
-``` 
-python ATG_CRISPResso2_to_RIMA2.py --crispresso_folder 02_crispresso_examples/ --out 03_rima_examples/
-```
-
-Output:
-
-```
-example_DMSO
-	Processing allele frequency table: 02_crispresso_examples/CRISPResso_on_example_DMSO/Alleles_frequency_table.zip
-	Variant file for example_DMSO saved as 03_rima_examples/RIMA_example_DMSO-variants.tsv
-example_NHEJi
-	Processing allele frequency table: 02_crispresso_examples/CRISPResso_on_example_NHEJi/Alleles_frequency_table.zip
-	Variant file for example_NHEJi saved as 03_rima_examples/RIMA_example_NHEJi-variants.tsv
-
-Tab-delimited experiment_sheet file saved as 03_rima_examples/experiment_sheet.tsv
-Done!
-```
 
 The following three files should have been generated in the output folder upon successful completion of the python script run:
 
-`ls 03_rima_examples/`
+`ls test_data/04_RIMA/`
 
 Output:
 ``` 
@@ -102,7 +81,7 @@ RIMA_example_NHEJi-variants.tsv
 experiment_sheet.tsv
 ```
 
-`column -t 03_rima_examples/RIMA_example_DMSO-variants.tsv`
+`column -t test_data/04_RIMA/RIMA_example_DMSO-variants.tsv`
 
 Output:
 ```
@@ -118,19 +97,26 @@ VariantNo  Position  Type  Length     Ref  Alt           Count
 8          10        56    Deletion   4    TGTA          -      2
 ```
 
-`column -t 03_rima_examples/experiment_sheet.tsv`
+`column -t test_data/04_RIMA/experiment_sheet.tsv`
 
 Output:
 ```
-file_address  file_name                                    amplicon_seq                     guide_seq                                                                                                                                                                                                   mapped_reads          wt_count  total_variants  cut_pos
-0             C:\RIMA\Raw\RIMA_example_DMSO-variants.tsv   RIMA_example_DMSO-variants.tsv   CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180       66              9        56
-1             C:\RIMA\Raw\RIMA_example_NHEJi-variants.tsv  RIMA_example_NHEJi-variants.tsv  CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180       77              6        56
-
+file_address                                 file_name                        amplicon_seq                                                                                                                                                                                                guide_seq             mapped_reads  wt_count  total_variants  cut_pos  mmej_reads  del_01_bp  del_02_05_bp  del_06_10_bp  del_above_10_bp  ins_01_bp  ins_02_05_bp  ins_06_10_bp  ins_above_10_bp  indel_combos
+C:\RIMA\Raw\RIMA_example_DMSO-variants.tsv   RIMA_example_DMSO-variants.tsv   CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180           66        9               56       62.0        9.0        92.0          9.0           35.0             35.0       0.0           0.0           0.0              0.0
+C:\RIMA\Raw\RIMA_example_NHEJi-variants.tsv  RIMA_example_NHEJi-variants.tsv  CGAGTCTAGAGGGCCCGTTTAAACCCGCTGGGCCATGGGCTATGAGTACAGGTCATGTACGGCCTCATAGTGGTACAGTAGTGACTCAAGACGATAGTTACCGGATAAGGCGCAGCGGTCGGGCTGAACGGGGGGTTCGTGCACACAGCCCAGCTTGGAGCGAACGACCTACACCGAACTGAGATACCTACAGCGTGAGCTA  CTATGAGTACAGGTCATGTA  180           77        6               56       90.0        0.0        101.0         15.0          59.0             5.0        0.0           0.0           0.0              0.0
 ```
 
 ### Transfer RIMA files to a Win or Mac computer
-* Copy and paste `experiment_sheet.tsv` table to `Experiment` worksheet in **RIMA2_v20240420.xlsm** file.
-* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder or adjust the file addresses accordign to your local disk address. *IMPORTANT NOTE*: file addresses should be alphanumerical without spaces.
+* Copy and paste `experiment_sheet.tsv` table to **Experiment** worksheet in **RIMA2_v20240420.xlsm** file.
+* an already completed RIMA workbook for the test samples in provided in the **test_data** folder.
+* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder any other location
+* In nessesary adjust the file addresses in the ****Experiment** worksheet accordign to your local disk address. 
+* *IMPORTANT NOTE*: file addresses should be alphanumerical without spaces.
+* Correct the **Total Files** in the **Experiment** worksheet cell "**C13**".
+* Proceed to the "**Single**" worksheet, adjust the required user inputs in cells **D11:D13** and **K11:K18**. If insertions at the cut-site are expected, then provide the expected insertion sequences in cells **W6:W17** with their corresponding names in **U6:U17**. 
+* Press the **Batch** buttom and follow the instructions.
+* Highly recommended close all other Excel workbooks before running RIMA. Also, don't use your computer during the run. 
+* Consult the **Log** worksheet to check if any of the samples had errors during the run. 
 
 ### RIMA vs CRISPResso
 ![Snapshots of RIAM and CRISPResso outputs](./test_data/CRISPResso_vs_RIMA_output.png)

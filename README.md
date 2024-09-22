@@ -39,7 +39,7 @@ cd atg_crispresso2_to_rima2
 
 ### Create atg_crispresso2_to_rima2 environment
 ```
-conda env create -f environment.yml
+conda env create -f CRISPResso2_to_RIMA2_env.yml
 conda activate atg_crispresso2_to_rima2
 ```
 
@@ -86,16 +86,16 @@ experiment_sheet.tsv
 
 Output:
 ```
-VariantNo  Position  Type  Length     Ref  Alt           Count
-0          2         57    Insertion  1    -             T      35
-1          3         50    Deletion   11   AGGTCATGTAC   -      25
-2          4         54    Deletion   5    CATGT         -      16
-3          5         57    Deletion   12   GTACGGCCTCAT  -      10
-4          6         53    Deletion   10   TCATGTACGG    -      9
-5          7         55    Deletion   2    AT            -      8
-6          8         57    Deletion   1    G             -      6
-7          9         56    Deletion   1    T             -      3
-8          10        56    Deletion   4    TGTA          -      2
+VariantNo  Position  Type       Length  Ref           Alt  Count
+2          57        Insertion  1       -             T    35
+3          50        Deletion   11      AGGTCATGTAC   -    25
+4          54        Deletion   5       CATGT         -    16
+5          57        Deletion   12      GTACGGCCTCAT  -    10
+6          53        Deletion   10      TCATGTACGG    -    9
+7          55        Deletion   2       AT            -    8
+8          57        Deletion   1       G             -    6
+9          56        Deletion   1       T             -    3
+10         56        Deletion   4       TGTA          -    2
 ```
 
 `column -t test_data/04_RIMA/experiment_sheet.tsv`

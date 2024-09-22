@@ -5,19 +5,20 @@ Non-Homologous End Joining (NHEJ) and Microhomology-Mediated End Joining (MMEJ) 
 
 Studying repair events at Cas9 target sites in human cells provides insights into the cell's DNA repair capacity and can be used as an assay to screen compounds that alter DNA repair pathways. One method of studying repair events at Cas9 cleavage sites is through amplicon sequencing and bioinformatics analysis. Several data analysis packages are available for such studies, with CRISPResso being the most widely used software. CRISPResso can delineate modified reads into Homology-Directed Repair (HDR) and non-HDR events. However, it does not distinguish between NHEJ and MMEJ events, and all erroneous repairs are collectively categorized as NHEJ (non-HDR).
 
-RIMA (Rational Indel Analysis Software), an Excel-based tool, was developed to specifically identify c-MMEJ deletions.
+**RIMA** (Rational Indel Meta-Analysis), an Excel-based tool, was developed to specifically identify c-MMEJ deletions.
 
-This repository contains:
+**This repository contains**:
 
- - A Python script ATG_CRISPResso2_to_RIMA2.py, which reads CRISPResso output (specifically the Allele_Frequency_Table.zip file) and generates variant tables that can be used as RIMA input.
- - The RIMA Excel workbook, which analyzes variant tables, produces statistics on repair events, and provides an informative graphical representation of the alleles.
+ - A Python script `ATG_CRISPResso2_to_RIMA2.py`, which reads CRISPResso output (specifically the Allele_Frequency_Table.zip file) and generates variant tables that can be used as RIMA input.
+ - The latest version of RIMA Excel workbook `RIMA2_v20240420.xlsm`, which analyzes variant tables, produces statistics on repair events, and provides an informative graphical representation of the alleles.
 
-## RIMA use cases
- - **Restrictly** where the a wild-type Cas9 (or its variations like PEn) is used (especifically, SpyCas9 or Type-IIB Cas9s). 
- - HDR templates can be used only if the HDR repair outcome is insertion of 3 nucleotides or more.
- - Up to 12 different repair template can be used, only if the repair outcome is the insrtion of 3 nucleotides or more.
- - Except extended insertions, other repair events are classified into *c-MMEJ* and *Other-EJ*.
- - Single nucleotide variations are considered sequencing errors and are eliminated from the analysis. Therefore, HDR experiments that exchange bases must not be analyses using RIMA.
+## RIMA use-cases
+ - **Restrictly** where the a single guide-RNA and a wild-type Cas9 (or its variations like PEn) is used (especifically, SpyCas9 or Type-IIB Cas9s). 
+ - HDR templates can be used **only if** the HDR repair outcome is insertion of 3 nucleotides or more.
+ - Up to 12 different repair template can be used at the same time, only if the repair outcome is the insrtion of 3 nucleotides or more. One can imagine a scenario in which templated-assisted repair events via HDR, NHEJ, MMEJ, and their variations result in insertions at the cut-site. 
+ - Except extended insertions that could be classified as knock-ins, other repair events are classified into **c-MMEJ** and **Other-EJ**. 
+ - Single nucleotide variations are considered sequencing errors and are eliminated from the analysis. Therefore, HDR experiments that exchange bases must not be analyses using RIMA. Likewise, RIMA shall not be used for the analysis of Base Edited and Prime Eidted samples.
+ - **RIMA** can also be used for the analysis of deep-sequenced off-target sites. RIMA offers a higher sensitivity than CRISPResso thanks to the adjustable aparameters in RIMA like **min allele frequency**, **min No. of reads per allele**, and its inherent algorithm to eliminate variants outside of the cutsite.
 
 ## Requirements
 
@@ -108,15 +109,15 @@ C:\RIMA\Raw\RIMA_example_NHEJi-variants.tsv  RIMA_example_NHEJi-variants.tsv  CG
 
 ### Transfer RIMA files to a Win or Mac computer
 * Copy and paste `experiment_sheet.tsv` table to **Experiment** worksheet in **RIMA2_v20240420.xlsm** file.
-* an already completed RIMA workbook for the test samples in provided in the **test_data** folder.
-* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder any other location
-* In nessesary adjust the file addresses in the ****Experiment** worksheet accordign to your local disk address. 
+* an already completed RIMA workbook for the test samples is provided in the **test_data** folder.
+* Transfer RIMA variant tables to **"C:\RIMA\Raw\"** folder or any other desited location except cloud-based folders like One Drive. 
+* In nessesary adjust the file addresses in the **Experiment** worksheet accordign to your local disk address. 
 * *IMPORTANT NOTE*: file addresses should be alphanumerical without spaces.
 * Correct the **Total Files** in the **Experiment** worksheet cell "**C13**".
 * Proceed to the "**Single**" worksheet, adjust the required user inputs in cells **D11:D13** and **K11:K18**. If insertions at the cut-site are expected, then provide the expected insertion sequences in cells **W6:W17** with their corresponding names in **U6:U17**. 
 * Press the **Batch** buttom and follow the instructions.
-* Highly recommended close all other Excel workbooks before running RIMA. Also, don't use your computer during the run. 
-* Consult the **Log** worksheet to check if any of the samples had errors during the run. 
+* *IMPORTANT NOTE*: close all other Excel workbooks before running RIMA. Also, don't use your computer during the run. 
+* Once the run is complete, consult the **Log** worksheet to check if any of the samples had errors during the run. 
 
 ### RIMA vs CRISPResso
 ![Snapshots of RIAM and CRISPResso outputs](./test_data/CRISPResso_vs_RIMA_output.png)
